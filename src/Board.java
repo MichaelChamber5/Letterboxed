@@ -163,7 +163,8 @@ Board class
     {
         if(unusedLetters.contains(letter))
         {
-            unusedLetters.remove(letter);
+            Character c = letter;
+            unusedLetters.remove(c);
         }
         else
         {
@@ -175,12 +176,18 @@ Board class
     {
         if(!unusedLetters.contains(letter))
         {
-            unusedLetters.add(letter);
+            Character c = letter;
+            unusedLetters.add(c);
         }
         else
         {
             System.err.println("Tried adding letter already in list...");
         }
+    }
+
+    public boolean isInUnused(char letter)
+    {
+        return unusedLetters.contains(letter);
     }
 
     public int getUnusedLettersCount()

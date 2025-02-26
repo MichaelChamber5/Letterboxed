@@ -40,7 +40,10 @@ Player class
             //add letter to current word
             currentWord += letter;
             //remove letter from unused letters in board
-            board.removeFromUnused(letter);
+            if(board.isInUnused(letter))
+            {
+                board.removeFromUnused(letter);
+            }
             //update last played letter
             lettersPlayed.add(letter);
         }
@@ -51,7 +54,7 @@ Player class
         }
     }
 
-    public void Submit()
+    public void submit()
     {
         //TODO: if current word is a word...
 
@@ -62,30 +65,26 @@ Player class
         char endingLetter = lettersPlayed.peek();
         words.add(currentWord);
         lettersPlayed.add(' ');
-        currentWord = "";
-        try
-        {
-            play(endingLetter);
-        }
-        catch (Exception e)
-        {
-            System.err.println("ERROR: This was called in Submit (this is bad)");
-            System.out.println(e.getMessage());
-        }
+        currentWord = "" + endingLetter;
+        lettersPlayed.add(endingLetter);
     }
 
-    public void Remove()
+    public void remove() throws Exception
     {
+        if(lettersPlayed.empty())
+        {
+            throw new Exception("Cannot remove, no letters have been played yet...");
+        }
         char removedLetter = lettersPlayed.pop();
         //if letter we just removed isn't anywhere else in the stack, add it back to unusedLetters
-        if(hasLetterBeenPlayed(removedLetter)) //checking because a letter can be used more than once
+        if(!hasLetterBeenPlayed(removedLetter)) //checking because a letter can be used more than once
         {
             board.addToUnused(removedLetter);
         }
         //if the letter previous to the letter removed is a space:
             //remove the space
             //undo the submission of the word
-        if(lettersPlayed.peek().equals(' '))
+        if(!lettersPlayed.empty() && lettersPlayed.peek().equals(' '))
         {
             lettersPlayed.pop();
             currentWord = words.remove(words.size() - 1);
@@ -119,14 +118,13 @@ Player class
      */
     private boolean letterCanBePlayed(char letter)
     {
-        //check if this is not first letter played
         if(lettersPlayed.empty() || lettersPlayed.peek().equals(' '))
-        {
+            return true;
+        //check if this is not first letter played
             //check if letter is in same row as previous letter
-            if(board.getLetterRow(letter) == board.getLetterRow(lettersPlayed.peek()))
-            {
-                return false;
-            }
+        if(board.getLetterRow(letter) == board.getLetterRow(lettersPlayed.peek()))
+        {
+            return false;
         }
         //check if the letter is actually an option on the board
         if(!board.isLetterInBoard(letter))
@@ -150,6 +148,22 @@ Player class
             }
         }
         return count;
+    }
+
+    public String toString()
+    {
+        String theString = "";
+        for(String word : words)
+        {
+            theString += word + "-";
+        }
+        theString += currentWord;
+        return theString;
+    }
+
+    public Board getBoard()
+    {
+        return board;
     }
 
 }

@@ -56,9 +56,60 @@ Player class
         //TODO: if current word is a word...
 
         //add current word to words list
-        //the last letter of the word gets automatically played?
+        //add a space to lettersPlayed
         //current word = ""
-        //
+        //play last played letter
+        char endingLetter = lettersPlayed.peek();
+        words.add(currentWord);
+        lettersPlayed.add(' ');
+        currentWord = "";
+        try
+        {
+            play(endingLetter);
+        }
+        catch (Exception e)
+        {
+            System.err.println("ERROR: This was called in Submit (this is bad)");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void Remove()
+    {
+        char removedLetter = lettersPlayed.pop();
+        //if letter we just removed isn't anywhere else in the stack, add it back to unusedLetters
+        if(hasLetterBeenPlayed(removedLetter)) //checking because a letter can be used more than once
+        {
+            board.addToUnused(removedLetter);
+        }
+        //if the letter previous to the letter removed is a space:
+            //remove the space
+            //undo the submission of the word
+        if(lettersPlayed.peek().equals(' '))
+        {
+            lettersPlayed.pop();
+            currentWord = words.remove(words.size() - 1);
+        }
+        //else
+            //reduce currentWord
+        else
+        {
+            currentWord = currentWord.substring(0, currentWord.length() - 1);
+        }
+    }
+
+    private boolean hasLetterBeenPlayed(char letter)
+    {
+        Stack<Character> tempStack = new Stack<>();
+        tempStack.addAll(lettersPlayed);
+        while(!tempStack.empty())
+        {
+            if(tempStack.pop().equals(letter))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -85,9 +136,20 @@ Player class
         return true;
     }
 
-    private int getNumLettersPlayed()
+    public int getNumLettersPlayed()
     {
-        return -1;
+        int count = 0;
+        Stack<Character> tempLetters = new Stack<>();
+        tempLetters.addAll(lettersPlayed);
+        while(!tempLetters.empty())
+        {
+            char currChar = tempLetters.pop();
+            if(currChar != ' ')
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
 }

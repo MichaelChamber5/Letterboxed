@@ -188,4 +188,11 @@ Board class
         return unusedLetters.size();
     }
 
+    public boolean hasWon()
+    {
+        if(unusedLetters.isEmpty())
+            return true;
+        return false;
+    }
+
 }

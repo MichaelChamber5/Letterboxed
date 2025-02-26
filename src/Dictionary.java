@@ -6,8 +6,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Dictionary {
-    public Set<String> loadWordsFromTextFiles(ArrayList<String> textFiles) {
-        Set<String> dictionary = new HashSet<>();
+
+    private final Set<String> dictionary;
+
+    public Dictionary(ArrayList<String> textFiles)
+    {
+        dictionary = new HashSet<>();
         for(String textFile : textFiles) {
             try (BufferedReader br = new BufferedReader(new FileReader(textFile))) {
                 String line;
@@ -18,10 +22,9 @@ public class Dictionary {
                 System.err.println("Something wrong, try reading the file again: " + e.getMessage());
             }
         }
-        return dictionary;
     }
 
-    public boolean doesWordExist(String possibleWord, Set<String> dictionary){
+    public boolean doesWordExist(String possibleWord){
         return dictionary.contains(possibleWord.toLowerCase());
     }
 }

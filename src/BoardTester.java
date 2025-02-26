@@ -1,11 +1,16 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Scanner;
 
 public class BoardTester {
-    public static void main(String[] args) {
-        Board myBoard = new Board(4, "irly hope this work");
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner scn = new Scanner(new File("4x4Boards.txt"));
+        String nextLine = scn.nextLine();
+        System.out.println(nextLine);
+        Board myBoard = new Board(4, nextLine);
         myBoard.printFormattedBoard();
-        Dictionary dictClass  = new Dictionary();
+
         ArrayList<String> wordFiles = new ArrayList<>();
 
         wordFiles.add("words1.txt");
@@ -13,12 +18,13 @@ public class BoardTester {
         wordFiles.add("words3.txt");
         wordFiles.add("words4.txt");
         wordFiles.add("words5.txt");
-        Set<String> dictionary = dictClass.loadWordsFromTextFiles(wordFiles);
-        System.out.println(dictClass.doesWordExist("Jacobethan", dictionary));
-        System.out.println(dictClass.doesWordExist("plantal", dictionary));
-        System.out.println(dictClass.doesWordExist("tchu", dictionary));
-        System.out.println(dictClass.doesWordExist("deadpanning", dictionary));
-        System.out.println(dictClass.doesWordExist("demicolumn", dictionary));
+
+        Dictionary dictClass  = new Dictionary(wordFiles);
+        System.out.println(dictClass.doesWordExist("Jacobethan"));
+        System.out.println(dictClass.doesWordExist("plantal"));
+        System.out.println(dictClass.doesWordExist("tchu"));
+        System.out.println(dictClass.doesWordExist("deadpanning"));
+        System.out.println(dictClass.doesWordExist("demicolumn"));
 
     }
 }

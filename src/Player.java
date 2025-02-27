@@ -22,6 +22,7 @@ Player class
     private ArrayList<String> words;
     private Stack<Character> lettersPlayed;
     private String currentWord;
+    private Dictionary dict;
 
     public Player(Board board)
     {
@@ -29,6 +30,14 @@ Player class
         words = new ArrayList<String>();
         lettersPlayed = new Stack<>();
         currentWord = "";
+
+        ArrayList<String> wordFiles = new ArrayList<>();
+        wordFiles.add("words1.txt");
+        wordFiles.add("words2.txt");
+        wordFiles.add("words3.txt");
+        wordFiles.add("words4.txt");
+        wordFiles.add("words5.txt");
+        dict = new Dictionary(wordFiles);
     }
 
     public void play(char letter) throws Exception
@@ -62,11 +71,17 @@ Player class
         //add a space to lettersPlayed
         //current word = ""
         //play last played letter
-        char endingLetter = lettersPlayed.peek();
-        words.add(currentWord);
-        lettersPlayed.add(' ');
-        currentWord = "" + endingLetter;
-        lettersPlayed.add(endingLetter);
+        if(dict.doesWordExist(currentWord)){
+            char endingLetter = lettersPlayed.peek();
+            words.add(currentWord);
+            lettersPlayed.add(' ');
+            currentWord = "" + endingLetter;
+            lettersPlayed.add(endingLetter);
+        }
+        else{
+            System.out.printf("%s is not a valid word.", currentWord);
+        }
+
     }
 
     public void remove() throws Exception

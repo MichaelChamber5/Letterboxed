@@ -1,4 +1,7 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 public class Player {
@@ -23,6 +26,7 @@ Player class
     private Stack<Character> lettersPlayed;
     private String currentWord;
     private Dictionary dict;
+    private Set<String> failedAttempts;
 
     public Player(Board board)
     {
@@ -30,6 +34,8 @@ Player class
         words = new ArrayList<String>();
         lettersPlayed = new Stack<>();
         currentWord = "";
+        failedAttempts = new HashSet<>();
+
 
         ArrayList<String> wordFiles = new ArrayList<>();
         wordFiles.add("words1.txt");
@@ -42,6 +48,7 @@ Player class
 
     public void play(char letter) throws Exception
     {
+
         //check letter
         if(letterCanBePlayed(letter))
         {
@@ -72,11 +79,11 @@ Player class
         //current word = ""
         //play last played letter
         if(dict.doesWordExist(currentWord)){
-            char endingLetter = lettersPlayed.peek();
-            words.add(currentWord);
-            lettersPlayed.add(' ');
-            currentWord = "" + endingLetter;
-            lettersPlayed.add(endingLetter);
+                char endingLetter = lettersPlayed.peek();
+                words.add(currentWord);
+                lettersPlayed.add(' ');
+                currentWord = "" + endingLetter;
+                lettersPlayed.add(endingLetter);
         }
         else{
             System.out.printf("%s is not a valid word.", currentWord);
@@ -165,6 +172,67 @@ Player class
         return count;
     }
 
+    public char getNextBestChar(char[] possibleChars){
+        char bestChar = possibleChars[0];
+
+        String bestStr = currentWord + possibleChars[0];
+        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr);
+
+        for (int i = 1; i < possibleChars.length; i++) {
+            String testStr = currentWord + possibleChars[i];
+            if(dict.getAverageSuccesorLength(testStr) > maxHeristicVal){    // we can change this line to evaluate different heuristics
+                bestChar =  possibleChars[i];
+            }
+        }
+
+        return bestChar;
+    }
+
+    public char getNextBestCharArrayList(ArrayList<Character> possibleChars){
+        char bestChar = possibleChars.get(0);
+
+        String bestStr = currentWord + possibleChars.get(0);
+        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr);
+
+        for (int i = 1; i < possibleChars.size(); i++) {
+            String testStr = currentWord + possibleChars.get(i);
+            if(dict.getAverageSuccesorLength(testStr) > maxHeristicVal){    // we can change this line to evaluate different heuristics
+                bestChar =  possibleChars.get(i);
+            }
+        }
+
+        return bestChar;
+    }
+
+    public boolean hasAnotherMove(ArrayList<Character> possibleChars){
+        for (int i = 0; i < possibleChars.size(); i++) {
+            String str = currentWord+possibleChars.get(i);
+            if (dict.getNumSuccessors(str)>1){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addFailedAttempt(String failedAttempt){
+        failedAttempts.add(failedAttempt);
+    }
+
+    public String getCurrentWord(){
+        return currentWord;
+    }
+
+    public ArrayList<Character> getNewMoves(char[] boardPossibleMoves){
+        ArrayList<Character> newMoves = new ArrayList<>();
+        for(char chr: boardPossibleMoves){
+            if(!failedAttempts.contains(currentWord+chr)){
+                newMoves.add(chr);
+            }
+        }
+        return newMoves;
+    }
+
     public String toString()
     {
         String theString = "";
@@ -175,6 +243,8 @@ Player class
         theString += currentWord;
         return theString;
     }
+
+
 
     public Board getBoard()
     {

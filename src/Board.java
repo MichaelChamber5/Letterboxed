@@ -99,6 +99,62 @@ Board class
         return theLetters;
     }
 
+    public String[] getLettersAsString()
+    {
+        String[] theLetters = new String[sideLength * NUM_ROWS];
+        int index = 0;
+        for(int row = 0; row < NUM_ROWS; row++)
+        {
+            for(int col = 0; col < sideLength; col++)
+            {
+                theLetters[index] = String.valueOf(board[row][col]);
+                index++;
+            }
+        }
+        return theLetters;
+    }
+
+
+    // retrieves a list of next possible character moves
+    public String[] getPossibleMovesString(char lastSelectedLetter){
+        int notThisRow = getLetterRow(lastSelectedLetter);
+        String[] list = new String[sideLength * (NUM_ROWS-1)];
+        int index = 0;
+        for(int row = 0; row < NUM_ROWS; row++)
+        {
+            if(row == notThisRow){
+                continue;
+            }
+            for(int col = 0; col < sideLength; col++)
+            {
+                list[index] = String.valueOf(board[row][col]);
+                index++;
+            }
+        }
+        return list;
+
+    }
+
+    // retrieves a list of next possible character moves
+    public char[] getPossibleMovesChar(char lastSelectedLetter){
+        int notThisRow = getLetterRow(lastSelectedLetter);
+        char[] list = new char[sideLength * (NUM_ROWS-1)];
+        int index = 0;
+        for(int row = 0; row < NUM_ROWS; row++)
+        {
+            if(row == notThisRow){
+                continue;
+            }
+            for(int col = 0; col < sideLength; col++)
+            {
+                list[index] = board[row][col];
+                index++;
+            }
+        }
+        return list;
+
+    }
+
     public char[][] getBoard()
     {
         return board;
@@ -127,6 +183,10 @@ Board class
             }
         }
         return -1;
+    }
+
+    public int getSideLength(){
+        return sideLength;
     }
 
     public int getLetterCol(char letter)

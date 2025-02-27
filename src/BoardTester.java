@@ -11,20 +11,32 @@ public class BoardTester {
         Board myBoard = new Board(4, nextLine);
         myBoard.printFormattedBoard();
 
-        ArrayList<String> wordFiles = new ArrayList<>();
+//        char[] moves = new char[12];
+//        moves = myBoard.getPossibleMoves('N');
+//        System.out.println(moves);
 
+        ArrayList<String> wordFiles = new ArrayList<>();
         wordFiles.add("words1.txt");
         wordFiles.add("words2.txt");
         wordFiles.add("words3.txt");
         wordFiles.add("words4.txt");
         wordFiles.add("words5.txt");
 
-        Dictionary dictClass  = new Dictionary(wordFiles);
-        System.out.println(dictClass.doesWordExist("Jacobethan"));
-        System.out.println(dictClass.doesWordExist("plantal"));
-        System.out.println(dictClass.doesWordExist("tchu"));
-        System.out.println(dictClass.doesWordExist("deadpanning"));
-        System.out.println(dictClass.doesWordExist("demicolumn"));
 
+        Dictionary dictClass  = new Dictionary(wordFiles);
+
+        System.out.println(dictClass.doesWordExist("isr"));
+
+
+        System.out.print("\n\nNUM WORDS THAT START WITH A: ");
+        System.out.println(dictClass.getNumSuccessors("a"));
+        System.out.println(dictClass.getAverageSuccesorLength("a"));
     }
+
+//    public int getNumSuccessors(String substring, ){
+//        for(String word : dict)
+//        for (int i = 0; i < substring.length(); i++) {
+//
+//        }
+//    }
 }

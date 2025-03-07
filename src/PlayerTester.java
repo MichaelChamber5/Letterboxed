@@ -11,7 +11,7 @@ public class PlayerTester {
         while(!playerHasWon)
         {
 
-            System.out.print("Enter a letter to play or\n[1] - submit\n[2] - remove\n[3] - print board info\n>>> ");
+            System.out.print("\nEnter a letter to play or\n[1] - submit\n[2] - remove\n[3] - print board info\n>>> ");
             char input = scan.nextLine().charAt(0);
 
             if(input == '1')
@@ -66,7 +66,7 @@ public class PlayerTester {
                 }
                 catch (Exception e)
                 {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 }
             }
 //            else

@@ -86,7 +86,7 @@ Player class
                 lettersPlayed.add(endingLetter);
         }
         else{
-            System.out.printf("%s is not a valid word.", currentWord);
+            System.out.printf("\"%s\" is not a valid word. ", currentWord);
         }
 
     }

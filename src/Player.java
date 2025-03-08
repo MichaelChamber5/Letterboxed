@@ -176,12 +176,14 @@ Player class
         char bestChar = possibleChars[0];
 
         String bestStr = currentWord + possibleChars[0];
-        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr);
+        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr) + board.pointsForBeingUnused(possibleChars[0]);
 
         for (int i = 1; i < possibleChars.length; i++) {
             String testStr = currentWord + possibleChars[i];
-            if(dict.getAverageSuccesorLength(testStr) > maxHeristicVal){    // we can change this line to evaluate different heuristics
+            if(dict.getAverageSuccesorLength(testStr) + board.pointsForBeingUnused(possibleChars[i]) > maxHeristicVal){    // we can change this line to evaluate different heuristics
                 bestChar =  possibleChars[i];
+                maxHeristicVal = dict.getAverageSuccesorLength(testStr) + board.pointsForBeingUnused(possibleChars[i]);
+                System.out.println("BETTER HEURISTIC VAL: " + maxHeristicVal);
             }
         }
 
@@ -192,12 +194,17 @@ Player class
         char bestChar = possibleChars.get(0);
 
         String bestStr = currentWord + possibleChars.get(0);
-        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr);
+
+        //add some points to heuristic if letter hasn't been used
+
+        double maxHeristicVal = dict.getAverageSuccesorLength(bestStr) + board.pointsForBeingUnused(possibleChars.get(0));
 
         for (int i = 1; i < possibleChars.size(); i++) {
             String testStr = currentWord + possibleChars.get(i);
-            if(dict.getAverageSuccesorLength(testStr) > maxHeristicVal){    // we can change this line to evaluate different heuristics
+            if(dict.getAverageSuccesorLength(testStr) + board.pointsForBeingUnused(possibleChars.get(i)) > maxHeristicVal){    // we can change this line to evaluate different heuristics
                 bestChar =  possibleChars.get(i);
+                maxHeristicVal = dict.getAverageSuccesorLength(testStr) + board.pointsForBeingUnused(possibleChars.get(i));
+                System.out.println("BETTER HEURISTIC VAL: " + maxHeristicVal);
             }
         }
 
@@ -242,6 +249,16 @@ Player class
         }
         theString += currentWord;
         return theString;
+    }
+
+    /**
+     * returns true if the word passed in has already been guessed
+     * @param word
+     * @return
+     */
+    public boolean wordAlreadyGuessed(String word)
+    {
+        return words.contains(word);
     }
 
 

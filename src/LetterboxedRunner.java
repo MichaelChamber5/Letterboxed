@@ -49,7 +49,7 @@ public class LetterboxedRunner {
 
             // SUBMIT
             // maybe add this logic too? if(dict.doesWordExist(soln) && dict.getNumSuccessors(soln) == 0)
-            if(dict.doesWordExist(me.getCurrentWord()) && me.getCurrentWord().length()>4)
+            if(dict.doesWordExist(me.getCurrentWord()) && me.getCurrentWord().length()>2 && !me.wordAlreadyGuessed(me.getCurrentWord()))
             {
                 System.out.println("Submitting word...");
                 try

@@ -245,9 +245,23 @@ Board class
         }
     }
 
+    /**
+     * returns true if the letter has not been used
+     * @param letter
+     * @return
+     */
     public boolean isInUnused(char letter)
     {
         return unusedLetters.contains(letter);
+    }
+
+    public int pointsForBeingUnused(char letter)
+    {
+        if(isInUnused(letter))
+        {
+            return 20;
+        }
+        return 0;
     }
 
     public int getUnusedLettersCount()

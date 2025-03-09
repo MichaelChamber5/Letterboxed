@@ -16,12 +16,16 @@ public class Dictionary {
             try (BufferedReader br = new BufferedReader(new FileReader(textFile))) {
                 String line;
                 while ((line = br.readLine()) != null) {
-                    dictionary.add(line.trim().toLowerCase());
+                    dictionary.add(line.trim().toUpperCase());
                 }
             } catch (IOException e) {
-                System.err.println("Something wrong, try reading the file again: " + e.getMessage());
+                System.err.println("dictionary error, try again: " + e.getMessage());
             }
         }
+    }
+
+    public Set<String> getDictionary() {
+        return dictionary;
     }
 
     public boolean doesWordExist(String possibleWord){

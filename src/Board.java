@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Board {
@@ -17,6 +18,7 @@ Board class
     */
 
     private int sideLength;
+    private String fileLine;
     private char[][] board;
     private final int NUM_ROWS = 4;
     ArrayList<Character> unusedLetters;
@@ -27,6 +29,7 @@ Board class
     public Board(int sideLength, String lineFromFile)
     {
         this.sideLength = sideLength;
+        this.fileLine = lineFromFile;
         unusedLetters = new ArrayList<Character>();
         board = new char[NUM_ROWS][sideLength];
 
@@ -41,10 +44,20 @@ Board class
             }
             else
             {
-                unusedLetters.add(lineFromFile.charAt(i));
+                unusedLetters.add(Character.toLowerCase(lineFromFile.charAt(i)));
                 board[boardRow][boardCol] = lineFromFile.charAt(i);
                 boardCol++;
             }
+        }
+    }
+
+    public Board(Board other){
+        this.fileLine = other.fileLine;
+        this.sideLength = other.sideLength;
+        this.unusedLetters = new ArrayList<>(other.unusedLetters);
+        this.board = new char[NUM_ROWS][sideLength];
+        for (int i = 0; i < NUM_ROWS; i++) {
+            this.board[i] = other.board[i].clone();  // Deep copy each row
         }
     }
 
@@ -52,6 +65,8 @@ Board class
     {
         return unusedLetters.size();
     }
+
+    public String getFileLine() { return fileLine; }
 
     public void printFormattedBoard()
     {
@@ -94,6 +109,20 @@ Board class
             {
                 theLetters[index] = board[row][col];
                 index++;
+            }
+        }
+        return theLetters;
+    }
+
+    public ArrayList<Character> getArrayListLetters()
+    {
+        ArrayList<Character> theLetters = new ArrayList<>();
+
+        for(int row = 0; row < NUM_ROWS; row++)
+        {
+            for(int col = 0; col < sideLength; col++)
+            {
+                theLetters.add(board[row][col]);
             }
         }
         return theLetters;
@@ -153,6 +182,24 @@ Board class
         }
         return list;
 
+    }
+
+    // retrieves a list of next possible character moves
+    public ArrayList<Character> getPossibleMovesCharArrayList(char lastSelectedLetter){
+        int notThisRow = getLetterRow(lastSelectedLetter);
+        ArrayList<Character>  list = new ArrayList<>();
+
+        for(int row = 0; row < NUM_ROWS; row++)
+        {
+            if(row == notThisRow){
+                continue;
+            }
+            for(int col = 0; col < sideLength; col++)
+            {
+                list.add(board[row][col]);
+            }
+        }
+        return list;
     }
 
     public char[][] getBoard()
@@ -219,16 +266,18 @@ Board class
         return false;
     }
 
+    public void removeWordFromUnused(String word) {
+        for (char letter : word.toLowerCase().toCharArray()) {
+            removeFromUnused(letter);
+        }
+    }
+
     public void removeFromUnused(char letter)
     {
         if(unusedLetters.contains(letter))
         {
             Character c = letter;
             unusedLetters.remove(c);
-        }
-        else
-        {
-            System.err.println("Tried removing letter that doesn't exist...");
         }
     }
 
@@ -259,7 +308,7 @@ Board class
     {
         if(isInUnused(letter))
         {
-            return 20;
+            return 3;
         }
         return 0;
     }
@@ -274,6 +323,10 @@ Board class
         if(unusedLetters.isEmpty())
             return true;
         return false;
+    }
+
+    public Board copyOfBoard(){
+        return new Board(this);
     }
 
 }

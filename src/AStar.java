@@ -6,48 +6,7 @@ public class AStar {
 
     private final Set<String> wordBank = new HashSet<>();
 
-    public static void main(String[] args) throws FileNotFoundException {
-        System.out.println("Input the desired board size (2, 3, or 4): ");
-        Scanner scn = new Scanner(System.in);
-        int size = scn.nextInt();
-
-        System.out.println("FileId: ");
-        int fileId = scn.nextInt();
-
-        String filename = "";
-
-        if(size == 2){
-            filename = "4x2Boards.txt";
-        }
-        else if(size == 4){
-            filename = "4x4Boards.txt";
-        }
-        else{
-            filename = "4x3Boards.txt";
-        }
-
-        Scanner file = new Scanner(new File(filename));
-
-
-        for (int i = 0; i < fileId; i++) {
-            file.nextLine();
-        }
-
-
-        Board board = new Board(size, file.nextLine());
-        board.printFormattedBoard();
-
-        long start = System.currentTimeMillis();
-        AStar astar = new AStar();
-        System.out.println("\nAnswer: " + astar.solve(board));
-        long end = System.currentTimeMillis();
-
-        long time = end-start;
-        System.out.println("Time elapsed: " + time + "ms");
-
-    }
-
-    public String solve (Board board){
+    public String solve (Board board, int verbosity){
         ArrayList<String> wordFiles = new ArrayList<>();
         wordFiles.add("words_easy.txt");
 //        wordFiles.add("words2.txt");
@@ -67,6 +26,11 @@ public class AStar {
         for(String word : dict.getDictionary()){
             boolean addWord = true;
 
+            if(verbosity > 1)
+            {
+                System.out.println();
+                System.out.println("Checking whether to add the word: \"" + word + "\"");
+            }
             // check to see if the first character is in the board
             ArrayList<Character> list = board.getArrayListLetters();
             if(!list.contains(word.charAt(0))){
@@ -86,10 +50,15 @@ public class AStar {
 
         // debug
 
-//        System.out.println("word bank");
-//        for(String w : wordBank){
-//            System.out.println(w);
-//        }
+        if(verbosity > 0)
+        {
+            System.out.println();
+            System.out.println();
+            System.out.println("Word Bank:");
+            for(String w : wordBank){
+                System.out.println(w);
+            }
+        }
 
 
         // Search //
@@ -101,9 +70,13 @@ public class AStar {
         nodeQueue.add(new Node(null, board, 0, null, board.getUnusedLetters()));
 
         while(!nodeQueue.isEmpty()){
-
             // poll takes the best option available
             Node node = nodeQueue.poll();
+            if(verbosity > 0)
+            {
+                System.out.println("------ Checking node ------");
+                node.printNicely();
+            }
 
             // found an answer, all letters on the board are used, return a string
             if(node.unusedLetters.isEmpty()){
@@ -138,6 +111,12 @@ public class AStar {
                             newWords.add(w);
                         }
                     }
+                }
+
+                if(verbosity > 1)
+                {
+                    System.out.println("\nList of possible new words: ");
+                    System.out.println(newWords);
                 }
 
                 // now for each new word, add it as a node

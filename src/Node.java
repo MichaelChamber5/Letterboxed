@@ -39,4 +39,10 @@ public class Node implements Comparable<Node>{
         return this.numberOfWordsPlaced - other.numberOfWordsPlaced;
     }
 
+    public void printNicely()
+    {
+        System.out.println("NODE INFO:");
+        System.out.println("Word: " + word + " | Letters remaining: " + unusedLetters);
+    }
+
 }

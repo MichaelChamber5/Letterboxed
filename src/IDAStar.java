@@ -1,99 +1,87 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class IDAStar {
 
     private final Set<String> wordBank = new HashSet<>();
 
-    public boolean search(NodeAgain node, int depthThreshold) {
-        int threshold = node.f();
+    // the recursion gets tricky, so i made an export variable to ensure i got the correct node
+    public Node exportNode;
 
-        while (true) {
-            int result = depthFirstSearch(node, 0, threshold);
-            if (result == 0) {
-                return true;
+    // depthThreshold: how many words do i have in my solution?
+    public double search(Node node, double depthThreshold, Board board, double heuristicVal, int verbosity) {
+        double threshold = depthThreshold;
+        double minNextThreshold = Integer.MAX_VALUE;
+
+        // Generate new words based on the current node's word
+        HashSet<String> newWords = generateWords(node);
+
+        // Generate children nodes
+        ArrayList<Node> children = getChildren(newWords, node, board, threshold);
+
+        for(Node child: children){
+            double result = depthFirstSearch(child, 1, threshold, board, heuristicVal);
+            if (result == 0.0) {
+
+                // Solution found, print the solution path
+                ArrayList<String> soln = new ArrayList<>();
+                while (exportNode.predecessorNode != null) {
+                    soln.add(exportNode.getWord());
+                    exportNode = exportNode.predecessorNode;
+                }
+                Collections.reverse(soln);
+                System.out.println(String.join(" ", soln));
+                return 0.0;  // Return 0 to indicate success
             }
-            if (result == Integer.MAX_VALUE) {
-                return false;
-            }
-            threshold = result;  // Update depth threshold to the minimum cost found
+            minNextThreshold = Math.min(minNextThreshold, result);
         }
+
+        return minNextThreshold;
     }
 
-    private int depthFirstSearch(NodeAgain node, int g, int depthThreshold) {
-        if (node.f() > depthThreshold) {
-            return node.f();  // Prune this branch if f exceeds the current threshold
-        }
-
-        if (node.board.getUnusedCount() == 0) {
-
-            // Solution found, print the solution path
-            ArrayList<String> soln = new ArrayList<>();
-            while(node.predecessorNode != null){
-                soln.add(node.getWord());
-                node = node.predecessorNode;
-            }
-
-            Collections.reverse(soln);
-            String result = String.join(" ", soln);
-            System.out.println(result);
-            return 0;
-        }
-
-
-        // we didn't find thesolution, and so now we need to generate more words
-        HashSet<String> newWords = new HashSet<>();
-
-        // if this is the first node, we want to add all relevant words from the word bank as nodes
-        if(node.getWord() == null){
-            for (String w : wordBank) {
-                newWords.add(w);
-            }
-        }
-        // if we have a word in the node, we want the next word's first character to  match the first words last character
-        //  ex:  candy-yesterday
-        else {
-            for (String w : wordBank) {
-                if (node.getWord().charAt(node.getWord().length() - 1) == w.charAt(0)) {
-                    newWords.add(w);
-                }
-            }
-        }
-
+    private double depthFirstSearch(Node node, int g, double depthThreshold, Board board, double hVal) {
         int min = Integer.MAX_VALUE;
 
-        for (String word : newWords) {
+        // HEURISTIC f
+        // Should be part of Node ideally.
+        // g: how many words have you created?
+        // h: weighted number of unused letters
+        double f = g + (node.unusedLetters.size()*hVal);
 
-            // Create a new board and apply the word to it
-            Board newBoard = node.board.copyOfBoard();
-            newBoard.removeWordFromUnused(word.toUpperCase());
 
-            // Create a new node representing this board state
-            NodeAgain childNode = new NodeAgain(word, newBoard, g + 1, node);
-
-            // Recursively call dfs for the new node
-            int result = depthFirstSearch(childNode, g+1, depthThreshold);
-
-            if (result == 0) {
-                return 0;  // Solution found
-            }
-
-            if (result < min) {
-                min = result;  // Update minimum f value
-            }
+        // don't go down this branch if f is larger the current threshold
+        if ( f > depthThreshold) {
+            return f;
         }
 
-        return min;  // Return the minimum f value from all child nodes
+        else if (node.getUnusedLetters().isEmpty()) {
+            exportNode = node;
+            return 0.0;
+        }
+
+        // we know that the node is under the depth threshold
+        // now we search again recursively
+        HashSet<String> newWords = generateWords(node);
+        ArrayList<Node> children = getChildren(newWords, node, board, depthThreshold);
+
+        double minNextThreshold = Integer.MAX_VALUE;
+
+        for (Node child : children) {
+            double result = depthFirstSearch(child, g + 1, depthThreshold, board, hVal);
+            if (result == 0.0) {
+                return 0.0;  // Solution found
+            }
+            minNextThreshold = Math.min(minNextThreshold, result);
+        }
+
+        return minNextThreshold;
     }
 
-
-    public void createWordBank(Board board){
+    public void createWordBank(Board board) {
+        // Populate word bank with valid words from dictionary based on board constraints
         ArrayList<String> wordFiles = new ArrayList<>();
         wordFiles.add("words_easy.txt");
         Dictionary dict = new Dictionary(wordFiles);
 
-        // Add all the possible words you can to the word bank
         for(String word : dict.getDictionary()){
             boolean addWord = true;
 
@@ -112,6 +100,41 @@ public class IDAStar {
             if(addWord){
                 wordBank.add(word);
             }
+
         }
+    }
+
+    public HashSet<String> generateWords(Node node){
+        HashSet<String> newWords = new HashSet<>();
+        if (node.getWord() == null) {
+            for (String w : wordBank) {
+                newWords.add(w);
+            }
+        } else {
+            for (String w : wordBank) {
+                if (node.getWord().charAt(node.getWord().length() - 1) == w.charAt(0)) {
+                    newWords.add(w);
+                }
+            }
+        }
+        return newWords;
+    }
+
+    public ArrayList<Node> getChildren(HashSet<String> newWords, Node node, Board board, double g) {
+        ArrayList<Node> children = new ArrayList<>();
+        for (String word : newWords) {
+            // Create a new list of unused letters
+            ArrayList<Character> newUU = new ArrayList<>(node.getUnusedLetters());
+            for (int i = 0; i < word.length(); i++) {
+                if (newUU.contains(word.toLowerCase().charAt(i))) {
+                    newUU.remove(Character.valueOf(word.toLowerCase().charAt(i)));
+                }
+            }
+
+            // Create a new node representing this board state
+            Node childNode = new Node(word, board, (int)g + 1, node, newUU);
+            children.add(childNode);
+        }
+        return children;
     }
 }

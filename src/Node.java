@@ -24,6 +24,10 @@ public class Node implements Comparable<Node>{
         return word;
     }
 
+    public ArrayList<Character> getUnusedLetters(){
+        return unusedLetters;
+    }
+
     // compareTo is our heuristic
     // automatically sorted when inserted into the priority queue
 

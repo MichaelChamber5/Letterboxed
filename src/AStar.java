@@ -58,6 +58,12 @@ public class AStar {
         Dictionary dict = new Dictionary(wordFiles);
 
         // Add all the possible words you can to the word bank
+        /*
+        This loop adds to wordBank
+        wordBank is basically all words in the dictionary that can actually be used
+        in Letterboxed, we can only use letters on the board
+        we also cannot use consecutive letters that are in the same row
+         */
         for(String word : dict.getDictionary()){
             boolean addWord = true;
 
@@ -92,7 +98,7 @@ public class AStar {
         // Heuristic: found in comparable function in Node
         PriorityQueue<Node> nodeQueue = new PriorityQueue<>();
         int maxWords = 6;
-        nodeQueue.add(new Node(null, board, 0, null));
+        nodeQueue.add(new Node(null, board, 0, null, board.getUnusedLetters()));
 
         while(!nodeQueue.isEmpty()){
 
@@ -100,7 +106,7 @@ public class AStar {
             Node node = nodeQueue.poll();
 
             // found an answer, all letters on the board are used, return a string
-            if(node.getBoard().getUnusedCount() == 0){
+            if(node.unusedLetters.isEmpty()){
 
                 // print the solution in the correct order
                 ArrayList<String> soln = new ArrayList<>();
@@ -109,8 +115,9 @@ public class AStar {
                     node = node.predecessorNode;
                 }
 
+                //since we're backtracking through the nodes, we need to reverse the order of the array
                 Collections.reverse(soln);
-                String result = String.join(" ", soln);
+                String result = String.join("-", soln);
                 return result.toUpperCase();
             }
 
@@ -121,9 +128,7 @@ public class AStar {
 
                 // if this is the first node, we want to add all relevant words as nodes
                 if(node.getWord() == null){
-                    for (String w : wordBank) {
-                        newWords.add(w);
-                    }
+                    newWords.addAll(wordBank);
                 }
                 // if we have a word in the node, we want the next word's first character to  match the first words last character
                 //  ex:  candy-yesterday
@@ -138,15 +143,23 @@ public class AStar {
                 // now for each new word, add it as a node
                 for(String w : newWords){
 
-                    // create a new board for the new node
-                    Board newBoard = node.getBoard().copyOfBoard();
-                    newBoard.removeWordFromUnused(w.toUpperCase());
+                    // remove from unused and pass that in
+                    //newUU == new unused letter list
+                    ArrayList<Character> newUU = new ArrayList<>(node.unusedLetters);
+                    for(int i = 0; i < w.length(); i++)
+                    {
+                        if(newUU.contains(w.toLowerCase().charAt(i)))
+                        {
+                            newUU.remove(Character.valueOf(w.toLowerCase().charAt(i)));
+                        }
+                    }
 
-                    Node newWord = new Node(w, newBoard, node.numberOfWordsPlaced+1, node);
+                    Node newWord = new Node(w, board, node.numberOfWordsPlaced+1, node, newUU);
                     nodeQueue.add(newWord);
                 }
             }
 
+            //System.out.println("returning to top");
         }
         return "No answer found.";
     }

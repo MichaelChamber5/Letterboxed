@@ -21,7 +21,7 @@ Board class
     private String fileLine;
     private char[][] board;
     private final int NUM_ROWS = 4;
-    ArrayList<Character> unusedLetters;
+    private ArrayList<Character> unusedLetters;
 
     /**
      *
@@ -279,6 +279,11 @@ Board class
             Character c = letter;
             unusedLetters.remove(c);
         }
+    }
+
+    public ArrayList<Character> getUnusedLetters()
+    {
+        return unusedLetters;
     }
 
     public void addToUnused(char letter)

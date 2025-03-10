@@ -1,20 +1,24 @@
+import java.util.ArrayList;
+
 public class Node implements Comparable<Node>{
     String word;
     Board board;
     int numberOfWordsPlaced;
     Node predecessorNode;
+    ArrayList<Character> unusedLetters;
 
-    public Node(String word, Board board, int numberOfWordsPlaced, Node predecessorNode){
+    public Node(String word, Board board, int numberOfWordsPlaced, Node predecessorNode, ArrayList<Character> unusedLetters){
         this.word = word;
         this.board = board;
         this.numberOfWordsPlaced = numberOfWordsPlaced;
         this.predecessorNode = predecessorNode;
+        this.unusedLetters = unusedLetters;
 
     }
 
-    public Board getBoard(){
-        return board;
-    }
+//    public Board getBoard(){
+//        return board;
+//    }
 
     public String getWord(){
         return word;
@@ -30,7 +34,7 @@ public class Node implements Comparable<Node>{
     @Override
     public int compareTo(Node other) {
         if(this.numberOfWordsPlaced == other.numberOfWordsPlaced) {
-            return this.board.getUnusedCount() - other.board.getUnusedCount();
+            return this.unusedLetters.size() - other.unusedLetters.size();
         }
         return this.numberOfWordsPlaced - other.numberOfWordsPlaced;
     }

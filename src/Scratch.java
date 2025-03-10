@@ -35,7 +35,7 @@ public class Scratch {
 
             long start = System.currentTimeMillis();
             IDAStar idAstar = new IDAStar();
-            idAstar.createWordBank(board);
+            idAstar.createWordBank(board, 0);
 
 
             Node root = new Node(null, board, 0, null, board.getUnusedLetters());

@@ -44,7 +44,7 @@ public class IDAStarRunner {
                 board.printFormattedBoard();
                 long start = System.currentTimeMillis();
                 IDAStar idAstar = new IDAStar();
-                idAstar.createWordBank(board);
+                idAstar.createWordBank(board, verbosity);
                 Node root = new Node(null, board, 0, null, board.getUnusedLetters());
 
                 System.out.print("\nAnswer: ");
@@ -79,7 +79,7 @@ public class IDAStarRunner {
                 board.printFormattedBoard();
                 long start = System.currentTimeMillis();
                 IDAStar idAstar = new IDAStar();
-                idAstar.createWordBank(board);
+                idAstar.createWordBank(board, verbosity);
                 Node root = new Node(null, board, 0, null, board.getUnusedLetters());
 
                 System.out.print("\nAnswer: ");
@@ -117,7 +117,7 @@ public class IDAStarRunner {
                 board.printFormattedBoard();
                 long start = System.currentTimeMillis();
                 IDAStar idAstar = new IDAStar();
-                idAstar.createWordBank(board);
+                idAstar.createWordBank(board, verbosity);
                 Node root = new Node(null, board, 0, null, board.getUnusedLetters());
 
                 System.out.print("\nAnswer: ");
@@ -150,7 +150,7 @@ public class IDAStarRunner {
 
             long start = System.currentTimeMillis();
             IDAStar idAstar = new IDAStar();
-            idAstar.createWordBank(board);
+            idAstar.createWordBank(board, verbosity);
             Node root = new Node(null, board, 0, null, board.getUnusedLetters());
             double hVal = 0;
             if(boardSizeInput == 3) {

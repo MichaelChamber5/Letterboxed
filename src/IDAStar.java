@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.*;
 
 public class IDAStar {
@@ -17,9 +18,20 @@ public class IDAStar {
 
         // Generate children nodes
         ArrayList<Node> children = getChildren(newWords, node, board, threshold);
+        if(verbosity > 1)
+        {
+            System.out.println();
+            System.out.println("This is the children of our current node [" + node.word + "]");
+            System.out.print("[");
+            for(Node child: children)
+            {
+                System.out.print(child.word + ", ");
+            }
+            System.out.println("]");
+        }
 
         for(Node child: children){
-            double result = depthFirstSearch(child, 1, threshold, board, heuristicVal);
+            double result = depthFirstSearch(child, 1, threshold, board, heuristicVal, verbosity);
             if (result == 0.0) {
 
                 // Solution found, print the solution path
@@ -38,7 +50,7 @@ public class IDAStar {
         return minNextThreshold;
     }
 
-    private double depthFirstSearch(Node node, int g, double depthThreshold, Board board, double hVal) {
+    private double depthFirstSearch(Node node, int g, double depthThreshold, Board board, double hVal, int verbosity) {
         int min = Integer.MAX_VALUE;
 
         // HEURISTIC f
@@ -46,7 +58,11 @@ public class IDAStar {
         // g: how many words have you created?
         // h: weighted number of unused letters
         double f = g + (node.unusedLetters.size()*hVal);
-
+        if(verbosity > 0)
+        {
+            System.out.println();
+            System.out.println("f value for [" + node.word + "] ------> g-[" + g + "] + h(unused letters)-[" + (node.unusedLetters.size()*hVal) + "] = f-[" + f + "]");
+        }
 
         // don't go down this branch if f is larger the current threshold
         if ( f > depthThreshold) {
@@ -62,11 +78,23 @@ public class IDAStar {
         // now we search again recursively
         HashSet<String> newWords = generateWords(node);
         ArrayList<Node> children = getChildren(newWords, node, board, depthThreshold);
+        if(verbosity > 1)
+        {
+            System.out.println();
+            System.out.println("Node: " + node.word + " is under the depth threshold. Expanding node...");
+            System.out.println("These are the children of [" + node.word + "]: ");
+            System.out.print("[");
+            for(Node child: children)
+            {
+                System.out.print(child.word + ", ");
+            }
+            System.out.println("]");
+        }
 
         double minNextThreshold = Integer.MAX_VALUE;
 
         for (Node child : children) {
-            double result = depthFirstSearch(child, g + 1, depthThreshold, board, hVal);
+            double result = depthFirstSearch(child, g + 1, depthThreshold, board, hVal, verbosity);
             if (result == 0.0) {
                 return 0.0;  // Solution found
             }
@@ -76,7 +104,7 @@ public class IDAStar {
         return minNextThreshold;
     }
 
-    public void createWordBank(Board board) {
+    public void createWordBank(Board board, int verbosity) {
         // Populate word bank with valid words from dictionary based on board constraints
         ArrayList<String> wordFiles = new ArrayList<>();
         wordFiles.add("words_easy.txt");
@@ -100,7 +128,12 @@ public class IDAStar {
             if(addWord){
                 wordBank.add(word);
             }
-
+        }
+        if(verbosity > 1)
+        {
+            System.out.println();
+            System.out.println("All dictionary words: ");
+            System.out.println(wordBank);
         }
     }
 
